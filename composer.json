@@ -1,0 +1,39 @@
+{
+  "name": "engelb64/woocommerce-payment-gateway-boilerplate",
+  "description": "Modular WooCommerce payment gateway boilerplate for payment orchestrators and gateways.",
+  "type": "wordpress-plugin",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Engelbert Jesus Bracho Ramirez",
+      "homepage": "https://github.com/Engelb64"
+    }
+  ],
+  "require": {
+    "php": ">=7.4"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.5",
+    "brain/monkey": "^2.6",
+    "wp-coding-standards/wpcs": "^3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "WCGatewayBoilerplate\\": "includes/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "WCGatewayBoilerplate\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    },
+    "sort-packages": true
+  }
+}
