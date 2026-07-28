@@ -94,19 +94,32 @@ woocommerce-payment-gateway-boilerplate/     ← raíz = plugin + docker
 ├── includes/
 │   ├── Plugin.php
 │   ├── Gateway/AbstractGateway.php
+│   ├── Gateway/BlocksSupport.php
 │   ├── Webhook/WebhookHandler.php
 │   ├── Dto/
 │   ├── Http/
 │   ├── Provider/
 │   ├── Service/
 │   └── Support/
+├── assets/
+│   ├── js/blocks.js
+│   └── css/gateway.css
 ├── documentation/                           (v1.0+)
-├── assets/                                  (v0.6+)
 ├── tests/                                   (v0.7+)
 └── woocommerce-payment-gateway-boilerplate.php
 ```
 
 No hay subcarpeta `plugins/` dentro del repo. El bind mount de Docker coloca este directorio en la ruta de plugins de WordPress.
+
+### Checkout Blocks (v0.6)
+
+El método se registra con WooCommerce Blocks (`BlocksSupport` + `assets/js/blocks.js`).
+
+1. Activa el gateway en **WooCommerce → Ajustes → Pagos**.
+2. Usa una página de Checkout con el bloque de WooCommerce (el default moderno).
+3. El método **Boilerplate Payment** debe aparecer y completar el pedido vía StubProvider (mismo `process_payment` del gateway).
+
+El checkout classic de v0.4 sigue funcionando.
 
 ### Smoke tests
 
@@ -125,7 +138,8 @@ php bin/smoke-service.php
 | v0.3 | PaymentService + StatusMapper + Logger |
 | v0.4 | Gateway WooCommerce classic (stub checkout) |
 | v0.5 | Webhooks firmados (`/?wc-api=wc_gateway_boilerplate`) |
-| v0.6+ | Pendiente |
+| v0.6 | Checkout Blocks |
+| v0.7+ | Pendiente |
 
 ## Licencia
 

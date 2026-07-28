@@ -72,9 +72,9 @@ docker compose logs -f wordpress
 1. **Plugins** → activar **WooCommerce Payment Gateway Boilerplate**.
 2. **WooCommerce → Ajustes → Pagos** → activar **Payment Gateway Boilerplate**.
 3. Guardar. Dejar **Simulate failure** en no para un checkout de prueba OK.
-4. Crear un producto simple, añadir al carrito y pagar en checkout classic.
+4. Crear un producto simple, añadir al carrito y pagar en checkout classic **o** Checkout Blocks.
 
-Si el método no aparece: confirma que WooCommerce está activo y recarga la página de Pagos.
+Si el método no aparece: confirma que WooCommerce está activo y recarga la página de Pagos. En Blocks, asegúrate de usar la página Checkout con el bloque de WooCommerce.
 
 ## URLs útiles
 
