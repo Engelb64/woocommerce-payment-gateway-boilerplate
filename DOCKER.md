@@ -130,15 +130,73 @@ composer install
 
 El bind mount hace que `vendor/` quede disponible para WordPress.
 
-## Webhooks en local (v0.5+)
+## Webhooks (v0.5)
 
-El endpoint del plugin será algo como:
+Endpoint del stub:
 
 ```text
-http://localhost:8080/?wc-api=<gateway_id>
+http://localhost:8080/?wc-api=wc_gateway_boilerplate
 ```
 
-Para probar webhooks desde fuera de tu máquina necesitarás un túnel (ngrok, Cloudflare Tunnel, etc.). En local, `curl` o Postman contra `localhost:8080` suele bastar.
+También se muestra en **WooCommerce → Ajustes → Pagos → Payment Gateway Boilerplate**.
+
+### Firma (StubProvider)
+
+Header: `X-Stub-Signature`  
+Valor: `HMAC-SHA256(raw_body, webhook_secret)`  
+Secret por defecto: `stub_secret` (el de la setting **Webhook secret**).
+
+### Payload de ejemplo
+
+```json
+{
+  "event_id": "evt_test_1",
+  "type": "payment.paid",
+  "provider_payment_id": "stub_pay_123",
+  "status": "paid",
+  "order_id": 123
+}
+```
+
+Sustituye `123` por un **order id real** de WooCommerce.
+
+### curl — firma válida (PowerShell)
+
+```powershell
+$body = '{"event_id":"evt_test_1","type":"payment.paid","provider_payment_id":"stub_pay_123","status":"paid","order_id":123}'
+$secret = "stub_secret"
+$hmac = [System.BitConverter]::ToString(
+  [System.Security.Cryptography.HMACSHA256]::new(
+    [Text.Encoding]::UTF8.GetBytes($secret)
+  ).ComputeHash([Text.Encoding]::UTF8.GetBytes($body))
+).Replace("-","").ToLower()
+
+curl.exe -s -X POST "http://localhost:8080/?wc-api=wc_gateway_boilerplate" `
+  -H "Content-Type: application/json" `
+  -H "X-Stub-Signature: $hmac" `
+  -d $body
+```
+
+Respuesta esperada: HTTP 200 con `"ok":true` y `"woo_status":"processing"`.
+
+### curl — firma inválida
+
+```powershell
+curl.exe -s -o - -w "\nHTTP %{http_code}\n" -X POST "http://localhost:8080/?wc-api=wc_gateway_boilerplate" `
+  -H "Content-Type: application/json" `
+  -H "X-Stub-Signature: invalid" `
+  -d "{\"event_id\":\"evt_bad\",\"type\":\"payment.paid\",\"provider_payment_id\":\"stub_pay_1\",\"status\":\"paid\",\"order_id\":1}"
+```
+
+Respuesta esperada: HTTP **401** (`invalid_signature`) — la orden no debe cambiar.
+
+### Idempotencia
+
+Reenvía el mismo `event_id` firmado: HTTP 200 con `"handled":false` y `"reason":"duplicate_event"`.
+
+### Túnel externo
+
+Para que un provider real llame a tu máquina: ngrok / Cloudflare Tunnel apuntando a `localhost:8080`.
 
 ## Troubleshooting
 

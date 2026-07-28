@@ -8,6 +8,7 @@
 namespace WCGatewayBoilerplate\Gateway;
 
 use WCGatewayBoilerplate\Plugin;
+use WCGatewayBoilerplate\Webhook\WebhookHandler;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -102,6 +103,15 @@ class AbstractGateway extends \WC_Payment_Gateway {
 				'label'       => __( 'Force StubProvider to fail create_payment (for testing)', 'wc-payment-gateway-boilerplate' ),
 				'default'     => 'no',
 				'description' => __( 'Only affects StubProvider. Disable for a successful test checkout.', 'wc-payment-gateway-boilerplate' ),
+			),
+			'webhook_url'      => array(
+				'title'       => __( 'Webhook URL', 'wc-payment-gateway-boilerplate' ),
+				'type'        => 'title',
+				'description' => sprintf(
+					/* translators: %s: webhook URL */
+					__( 'Send provider webhooks to: %s', 'wc-payment-gateway-boilerplate' ),
+					'<code>' . esc_html( WebhookHandler::get_url() ) . '</code>'
+				),
 			),
 		);
 	}

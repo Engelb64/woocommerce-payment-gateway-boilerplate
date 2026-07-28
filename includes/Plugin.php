@@ -15,6 +15,7 @@ use WCGatewayBoilerplate\Service\PaymentService;
 use WCGatewayBoilerplate\Service\StatusMapper;
 use WCGatewayBoilerplate\Support\Logger;
 use WCGatewayBoilerplate\Support\OrderHelper;
+use WCGatewayBoilerplate\Webhook\WebhookHandler;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -75,6 +76,9 @@ final class Plugin {
 		$this->boot_services();
 
 		add_filter( 'woocommerce_payment_gateways', array( $this, 'register_gateway' ) );
+
+		$webhook = new WebhookHandler();
+		$webhook->register();
 
 		/**
 		 * Fires after the boilerplate plugin has initialized.
