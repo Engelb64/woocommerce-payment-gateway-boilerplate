@@ -1,6 +1,6 @@
 # Entorno local con Docker
 
-Este documento describe cómo probar el plugin en WordPress usando Docker desde la **raíz del repositorio**.
+Guía validada (v0.8) para probar el plugin de punta a punta desde la **raíz del repositorio**.
 
 ## Cómo funciona
 
@@ -16,65 +16,94 @@ Tu repo (esta carpeta)
 └───────────────────────────────────────────────┘
 ```
 
-- Editas archivos en tu máquina.
-- WordPress los lee en la ruta de plugins sin copiar manualmente.
-- `vendor/`, `includes/`, `assets/`, etc. vivirán aquí cuando empiece el código (v0.1+).
+Editas en tu máquina; WordPress ve los cambios al instante.
 
 ## Servicios
 
-| Servicio | Imagen | Puerto local | Uso |
+| Servicio | Imagen | Puerto | Uso |
 |---|---|---|---|
-| `wordpress` | `wordpress:6.7-php8.2` | `8080` | WordPress + montaje del plugin |
+| `wordpress` | `wordpress:6.7-php8.2` | `8080` | WordPress + plugin montado |
 | `db` | `mysql:8.0` | interno | Base de datos |
-| `adminer` | `adminer` | `8081` | UI para MySQL (opcional) |
+| `adminer` | `adminer` | `8081` | UI MySQL |
+| `wpcli` | `wordpress:cli-php8.2` | — | WP-CLI one-off (`bin/setup-wp.*`) |
 
-## Requisitos
+## Instalación limpia (recomendada)
 
-- Docker Desktop en Windows, o Docker Engine + Compose v2.
-- Puertos `8080` y `8081` libres (o cambiar en `.env`).
-
-## Setup
-
-### 1. Variables de entorno
+### 1. Reset + levantar
 
 ```bash
-cp .env.example .env
-```
+# Desde la raíz del repo
+cp .env.example .env   # solo la primera vez
 
-Valores por defecto en `.env.example` son para desarrollo local. No uses esas credenciales en producción.
-
-### 2. Levantar contenedores
-
-```bash
+docker compose down -v
 docker compose up -d
+docker compose ps
 ```
 
-Ver logs:
+Espera a que `wordpress` esté healthy/up (unos segundos). Abre http://localhost:8080 si quieres verificar a mano.
+
+### 2. Setup automático (WP + Woo + plugin + producto)
+
+**Windows (PowerShell):**
+
+```powershell
+powershell -ExecutionPolicy Bypass -File bin\setup-wp.ps1
+```
+
+**Git Bash / WSL / macOS / Linux:**
 
 ```bash
-docker compose logs -f wordpress
+sh bin/setup-wp.sh
 ```
 
-### 3. Instalar WordPress (solo la primera vez)
+Credenciales por defecto del script:
 
-1. Abre [http://localhost:8080](http://localhost:8080).
-2. Idioma, título del sitio, usuario admin y contraseña.
-3. Entra al escritorio.
+| Campo | Valor |
+|---|---|
+| URL | http://localhost:8080 |
+| Usuario | `admin` |
+| Contraseña | `admin` |
 
-### 4. Instalar WooCommerce
+Override opcional: `WP_URL`, `WP_ADMIN_USER`, `WP_ADMIN_PASSWORD`, `WP_ADMIN_EMAIL`, `WP_TITLE`.
 
-1. **Plugins → Añadir nuevo** → buscar "WooCommerce".
-2. Instalar y activar.
-3. Completar el asistente de Woo (país, moneda, etc.) o saltarlo.
+### 3. Setup manual (alternativa)
 
-### 5. Activar este plugin
+1. http://localhost:8080 → instalar WordPress.
+2. Plugins → instalar/activar **WooCommerce**.
+3. Activar **WooCommerce Payment Gateway Boilerplate**.
+4. WooCommerce → Ajustes → Pagos → activar **Payment Gateway Boilerplate**.
+5. **Simulate failure** = no.
+6. Crear un producto y pagar en checkout classic o Blocks.
 
-1. **Plugins** → activar **WooCommerce Payment Gateway Boilerplate**.
-2. **WooCommerce → Ajustes → Pagos** → activar **Payment Gateway Boilerplate**.
-3. Guardar. Dejar **Simulate failure** en no para un checkout de prueba OK.
-4. Crear un producto simple, añadir al carrito y pagar en checkout classic **o** Checkout Blocks.
+## Checklist de validación end-to-end (v0.8)
 
-Si el método no aparece: confirma que WooCommerce está activo y recarga la página de Pagos. En Blocks, asegúrate de usar la página Checkout con el bloque de WooCommerce.
+Marca en una instalación limpia:
+
+- [ ] `docker compose up -d` levanta WP en http://localhost:8080
+- [ ] El plugin aparece montado:
+
+```bash
+docker compose exec wordpress ls wp-content/plugins/woocommerce-payment-gateway-boilerplate
+```
+
+- [ ] Setup (`bin/setup-wp.ps1` o `.sh`) deja Woo + plugin activos
+- [ ] Gateway visible y enabled en Pagos
+- [ ] Checkout stub → pedido en **Processing** + meta `stub_pay_*`
+- [ ] Refund desde el pedido en admin OK
+- [ ] Webhook firmado OK / firma inválida 401 (sección Webhooks)
+- [ ] Smoke CLI:
+
+```bash
+docker compose run --rm --no-deps --entrypoint php wordpress \
+  /var/www/html/wp-content/plugins/woocommerce-payment-gateway-boilerplate/bin/smoke-service.php
+```
+
+- [ ] PHPUnit (imagen Composer; la imagen WordPress no trae Composer):
+
+```bash
+docker run --rm -v "${PWD}:/app" -w /app composer:2 install
+docker run --rm -v "${PWD}:/app" -w /app composer:2 php vendor/bin/phpunit --configuration phpunit.xml.dist
+```
 
 ## URLs útiles
 
@@ -82,10 +111,11 @@ Si el método no aparece: confirma que WooCommerce está activo y recarga la pá
 |---|---|
 | WordPress | http://localhost:8080 |
 | Admin | http://localhost:8080/wp-admin |
-| Adminer (DB) | http://localhost:8081 |
-| Checkout (tras Woo) | http://localhost:8080/checkout |
+| Adminer | http://localhost:8081 |
+| Checkout | http://localhost:8080/checkout |
+| Webhook | http://localhost:8080/?wc-api=wc_gateway_boilerplate |
 
-### Adminer — credenciales por defecto
+### Adminer
 
 | Campo | Valor |
 |---|---|
@@ -93,60 +123,44 @@ Si el método no aparece: confirma que WooCommerce está activo y recarga la pá
 | Servidor | `db` |
 | Usuario | `wordpress` |
 | Contraseña | `wordpress` |
-| Base de datos | `wordpress` |
+| Base | `wordpress` |
 
 ## Comandos habituales
 
 ```bash
-# Levantar
 docker compose up -d
-
-# Parar (conserva datos)
-docker compose down
-
-# Parar y borrar volúmenes (reset total WP + DB)
-docker compose down -v
-
-# Reiniciar solo WordPress
+docker compose down          # conserva datos
+docker compose down -v       # reset total WP + DB
 docker compose restart wordpress
-
-# Ver estado
 docker compose ps
+docker compose logs -f wordpress
+
+# WP-CLI ad-hoc
+docker compose run --rm wpcli plugin list
+docker compose run --rm wpcli option get siteurl
 ```
 
-## Composer dentro del contenedor (v0.1+)
+## Composer
 
-Cuando exista `composer.json`:
+La imagen `wordpress` **no** incluye Composer. Usa:
 
 ```bash
-docker compose exec wordpress bash -c "cd wp-content/plugins/woocommerce-payment-gateway-boilerplate && composer install"
+docker run --rm -v "${PWD}:/app" -w /app composer:2 install
+docker run --rm -v "${PWD}:/app" -w /app composer:2 test
 ```
 
-O en tu máquina, si tienes PHP/Composer local:
+O Composer local si lo tienes en el PATH. El bind mount hace que `vendor/` quede visible para WordPress (útil para autoload; el plugin también tiene fallback sin vendor).
 
-```bash
-composer install
-```
-
-El bind mount hace que `vendor/` quede disponible para WordPress.
-
-## Webhooks (v0.5)
-
-Endpoint del stub:
+## Webhooks (v0.5+)
 
 ```text
 http://localhost:8080/?wc-api=wc_gateway_boilerplate
 ```
 
-También se muestra en **WooCommerce → Ajustes → Pagos → Payment Gateway Boilerplate**.
+Firma stub: header `X-Stub-Signature` = HMAC-SHA256(body, `webhook_secret`)  
+Default secret: `stub_secret`
 
-### Firma (StubProvider)
-
-Header: `X-Stub-Signature`  
-Valor: `HMAC-SHA256(raw_body, webhook_secret)`  
-Secret por defecto: `stub_secret` (el de la setting **Webhook secret**).
-
-### Payload de ejemplo
+### Payload
 
 ```json
 {
@@ -158,7 +172,7 @@ Secret por defecto: `stub_secret` (el de la setting **Webhook secret**).
 }
 ```
 
-Sustituye `123` por un **order id real** de WooCommerce.
+Usa un `order_id` real.
 
 ### curl — firma válida (PowerShell)
 
@@ -177,7 +191,7 @@ curl.exe -s -X POST "http://localhost:8080/?wc-api=wc_gateway_boilerplate" `
   -d $body
 ```
 
-Respuesta esperada: HTTP 200 con `"ok":true` y `"woo_status":"processing"`.
+Esperado: HTTP 200, `"ok":true`.
 
 ### curl — firma inválida
 
@@ -188,56 +202,36 @@ curl.exe -s -o - -w "\nHTTP %{http_code}\n" -X POST "http://localhost:8080/?wc-a
   -d "{\"event_id\":\"evt_bad\",\"type\":\"payment.paid\",\"provider_payment_id\":\"stub_pay_1\",\"status\":\"paid\",\"order_id\":1}"
 ```
 
-Respuesta esperada: HTTP **401** (`invalid_signature`) — la orden no debe cambiar.
+Esperado: HTTP **401**.
 
 ### Idempotencia
 
-Reenvía el mismo `event_id` firmado: HTTP 200 con `"handled":false` y `"reason":"duplicate_event"`.
-
-### Túnel externo
-
-Para que un provider real llame a tu máquina: ngrok / Cloudflare Tunnel apuntando a `localhost:8080`.
+Reenviar el mismo `event_id` → `"handled":false`, `"reason":"duplicate_event"`.
 
 ## Troubleshooting
 
 ### Puerto 8080 ocupado
 
-Edita `.env`:
+En `.env`: `WP_PORT=9080` → http://localhost:9080
 
-```env
-WP_PORT=9080
-```
-
-Luego `docker compose up -d` y usa http://localhost:9080.
-
-### El plugin no aparece en Plugins
-
-- Confirma que `docker-compose.yml` está en la raíz del repo.
-- Confirma que ejecutaste `docker compose` desde esa raíz.
-- Verifica el montaje:
+### El plugin no aparece
 
 ```bash
 docker compose exec wordpress ls -la wp-content/plugins/woocommerce-payment-gateway-boilerplate
 ```
 
-Deberías ver `README.md`, `docker-compose.yml`, etc.
+Debes ver `README.md`, `includes/`, etc. Ejecuta compose desde la raíz del repo.
 
-### Cambios en PHP no se reflejan
+### `bin/setup-wp` falla con permisos
 
-- WordPress con bind mount no requiere rebuild.
-- Si usas opcache agresivo en otro setup, reinicia: `docker compose restart wordpress`.
+El servicio `wpcli` corre como UID 33. Si hay errores de escritura en `wp_data`, reinicia limpio: `docker compose down -v && docker compose up -d`.
 
-### Reset limpio
+### Composer / PHPUnit
 
-```bash
-docker compose down -v
-docker compose up -d
-```
-
-Vuelve a instalar WordPress y WooCommerce desde el navegador.
+No uses `docker compose exec wordpress composer` (no está instalado). Usa la imagen `composer:2` como arriba.
 
 ## Qué no incluye este Docker
 
-- WooCommerce preinstalado (se instala desde el admin; automatización opcional en fases posteriores).
-- TLS / HTTPS local (no necesario para desarrollo básico).
-- Producción: este compose es solo para desarrollo local.
+- HTTPS local
+- Producción
+- WooCommerce preinstalado en la imagen (se instala con el script o a mano)
