@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Main plugin class (singleton).
  *
- * v0.1: only loads textdomain and boots. Gateway registration comes in later versions.
+ * Boots textdomain and extension hook. Gateway + PaymentService wire-up comes in later versions.
  */
 final class Plugin {
 
