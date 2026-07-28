@@ -37,9 +37,9 @@ class WebhookHandler {
 	 * @return void
 	 */
 	public function handle() {
-		$plugin  = Plugin::instance();
-		$logger  = $plugin->get_logger();
-		$service = $plugin->get_payment_service();
+		$plugin   = Plugin::instance();
+		$logger   = $plugin->get_logger();
+		$service  = $plugin->get_payment_service();
 		$provider = $plugin->get_provider();
 
 		$raw_body = $this->get_raw_body();

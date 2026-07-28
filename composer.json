@@ -28,7 +28,9 @@
     }
   },
   "scripts": {
-    "test": "vendor/bin/phpunit --configuration phpunit.xml.dist"
+    "test": "vendor/bin/phpunit --configuration phpunit.xml.dist",
+    "phpcs": "vendor/bin/phpcs --standard=phpcs.xml.dist",
+    "phpcbf": "vendor/bin/phpcbf --standard=phpcs.xml.dist"
   },
   "config": {
     "allow-plugins": {

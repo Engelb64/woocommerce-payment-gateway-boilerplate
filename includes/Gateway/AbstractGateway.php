@@ -51,47 +51,47 @@ class AbstractGateway extends \WC_Payment_Gateway {
 	 */
 	public function init_form_fields() {
 		$this->form_fields = array(
-			'enabled'        => array(
+			'enabled'          => array(
 				'title'   => __( 'Enable/Disable', 'wc-payment-gateway-boilerplate' ),
 				'type'    => 'checkbox',
 				'label'   => __( 'Enable Payment Gateway Boilerplate', 'wc-payment-gateway-boilerplate' ),
 				'default' => 'no',
 			),
-			'title'          => array(
+			'title'            => array(
 				'title'       => __( 'Title', 'wc-payment-gateway-boilerplate' ),
 				'type'        => 'text',
 				'description' => __( 'Payment method title shown at checkout.', 'wc-payment-gateway-boilerplate' ),
 				'default'     => __( 'Boilerplate Payment', 'wc-payment-gateway-boilerplate' ),
 				'desc_tip'    => true,
 			),
-			'description'    => array(
+			'description'      => array(
 				'title'       => __( 'Description', 'wc-payment-gateway-boilerplate' ),
 				'type'        => 'textarea',
 				'description' => __( 'Payment method description shown at checkout.', 'wc-payment-gateway-boilerplate' ),
 				'default'     => __( 'Pay using the boilerplate stub provider (for development).', 'wc-payment-gateway-boilerplate' ),
 				'desc_tip'    => true,
 			),
-			'sandbox'        => array(
+			'sandbox'          => array(
 				'title'   => __( 'Sandbox', 'wc-payment-gateway-boilerplate' ),
 				'type'    => 'checkbox',
 				'label'   => __( 'Enable sandbox / test mode', 'wc-payment-gateway-boilerplate' ),
 				'default' => 'yes',
 			),
-			'api_key'        => array(
+			'api_key'          => array(
 				'title'       => __( 'API key', 'wc-payment-gateway-boilerplate' ),
 				'type'        => 'password',
 				'description' => __( 'Provider API key (not used by StubProvider).', 'wc-payment-gateway-boilerplate' ),
 				'default'     => '',
 				'desc_tip'    => true,
 			),
-			'webhook_secret' => array(
+			'webhook_secret'   => array(
 				'title'       => __( 'Webhook secret', 'wc-payment-gateway-boilerplate' ),
 				'type'        => 'password',
 				'description' => __( 'Shared secret for webhook signature verification.', 'wc-payment-gateway-boilerplate' ),
 				'default'     => 'stub_secret',
 				'desc_tip'    => true,
 			),
-			'logging'        => array(
+			'logging'          => array(
 				'title'   => __( 'Logging', 'wc-payment-gateway-boilerplate' ),
 				'type'    => 'checkbox',
 				'label'   => __( 'Enable debug logging (WooCommerce → Status → Logs)', 'wc-payment-gateway-boilerplate' ),

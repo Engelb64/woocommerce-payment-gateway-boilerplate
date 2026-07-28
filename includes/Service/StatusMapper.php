@@ -35,15 +35,15 @@ class StatusMapper {
 	 */
 	public static function default_map(): array {
 		return array(
-			'pending'   => 'on-hold',
-			'created'   => 'on-hold',
-			'authorized'=> 'on-hold',
-			'paid'      => 'processing',
-			'captured'  => 'processing',
-			'failed'    => 'failed',
-			'cancelled' => 'cancelled',
-			'canceled'  => 'cancelled',
-			'refunded'  => 'refunded',
+			'pending'    => 'on-hold',
+			'created'    => 'on-hold',
+			'authorized' => 'on-hold',
+			'paid'       => 'processing',
+			'captured'   => 'processing',
+			'failed'     => 'failed',
+			'cancelled'  => 'cancelled',
+			'canceled'   => 'cancelled',
+			'refunded'   => 'refunded',
 		);
 	}
 

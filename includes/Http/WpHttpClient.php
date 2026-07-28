@@ -46,8 +46,8 @@ class WpHttpClient implements ClientInterface {
 			throw new \RuntimeException(
 				sprintf(
 					/* translators: %s: error message from wp_remote_request */
-					__( 'HTTP request failed: %s', 'wc-payment-gateway-boilerplate' ),
-					$response->get_error_message()
+					esc_html__( 'HTTP request failed: %s', 'wc-payment-gateway-boilerplate' ),
+					esc_html( $response->get_error_message() )
 				)
 			);
 		}
