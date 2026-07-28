@@ -1,0 +1,139 @@
+# Copyright (C) 2026 Engelbert Jesus Bracho Ramirez
+# This file is distributed under the MIT license.
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce Payment Gateway Boilerplate 1.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/Engelb64/woocommerce-payment-gateway-boilerplate/issues\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-07-28T00:00:00+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"X-Domain: wc-payment-gateway-boilerplate\n"
+
+#: woocommerce-payment-gateway-boilerplate.php
+msgid "WooCommerce Payment Gateway Boilerplate requires WooCommerce to be installed and active."
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Payment Gateway Boilerplate"
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Modular boilerplate gateway (StubProvider by default)."
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Enable/Disable"
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Enable Payment Gateway Boilerplate"
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Title"
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Payment method title shown at checkout."
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Boilerplate Payment"
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Description"
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Payment method description shown at checkout."
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Pay using the boilerplate stub provider (for development)."
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Sandbox"
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Enable sandbox / test mode"
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "API key"
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Provider API key (not used by StubProvider)."
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Webhook secret"
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Shared secret for webhook signature verification."
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Logging"
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Enable debug logging (WooCommerce → Status → Logs)"
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Simulate failure (stub)"
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Force StubProvider to fail create_payment (for testing)"
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Only affects StubProvider. Disable for a successful test checkout."
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Webhook URL"
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Send provider webhooks to: %s"
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Order not found."
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Payment processing error. Please try again."
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Payment failed."
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Invalid refund amount."
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Refund failed."
+msgstr ""
+
+#: includes/Gateway/AbstractGateway.php
+msgid "Refund reason: %s"
+msgstr ""
+
+#: includes/Http/WpHttpClient.php
+msgid "HTTP request failed: %s"
+msgstr ""
