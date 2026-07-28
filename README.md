@@ -104,8 +104,11 @@ woocommerce-payment-gateway-boilerplate/     ← raíz = plugin + docker
 ├── assets/
 │   ├── js/blocks.js
 │   └── css/gateway.css
+├── tests/
+│   ├── bootstrap.php
+│   └── Unit/
+├── phpunit.xml.dist
 ├── documentation/                           (v1.0+)
-├── tests/                                   (v0.7+)
 └── woocommerce-payment-gateway-boilerplate.php
 ```
 
@@ -121,12 +124,21 @@ El método se registra con WooCommerce Blocks (`BlocksSupport` + `assets/js/bloc
 
 El checkout classic de v0.4 sigue funcionando.
 
-### Smoke tests
+### Smoke tests / PHPUnit (v0.7)
+
+```bash
+composer install
+composer test
+```
+
+También:
 
 ```bash
 php bin/smoke-stub.php
 php bin/smoke-service.php
 ```
+
+Los unit tests no requieren WordPress ni Docker (usan Brain Monkey para el HTTP client).
 
 ## Estado del proyecto
 
@@ -139,7 +151,8 @@ php bin/smoke-service.php
 | v0.4 | Gateway WooCommerce classic (stub checkout) |
 | v0.5 | Webhooks firmados (`/?wc-api=wc_gateway_boilerplate`) |
 | v0.6 | Checkout Blocks |
-| v0.7+ | Pendiente |
+| v0.7 | Tests unitarios (PHPUnit) |
+| v0.8+ | Pendiente |
 
 ## Licencia
 

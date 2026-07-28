@@ -28,7 +28,7 @@
     }
   },
   "scripts": {
-    "test": "phpunit"
+    "test": "vendor/bin/phpunit --configuration phpunit.xml.dist"
   },
   "config": {
     "allow-plugins": {
