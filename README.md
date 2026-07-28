@@ -56,13 +56,16 @@ woocommerce-payment-gateway-boilerplate/     ← raíz = plugin + docker
 ├── README.md
 ├── DOCKER.md
 ├── composer.json
-├── bin/smoke-stub.php                       # smoke del StubProvider (CLI)
+├── bin/smoke-stub.php
+├── bin/smoke-service.php
 ├── languages/
 ├── includes/
 │   ├── Plugin.php
-│   ├── Dto/                                 # PaymentResult, WebhookEvent
-│   ├── Http/                                # ClientInterface, WpHttpClient
-│   └── Provider/                            # ProviderInterface, StubProvider
+│   ├── Dto/
+│   ├── Http/
+│   ├── Provider/
+│   ├── Service/                             # PaymentService, StatusMapper
+│   └── Support/                             # Logger, OrderHelper
 ├── documentation/                           (v1.0+)
 ├── assets/                                  (v0.6+)
 ├── tests/                                   (v0.7+)
@@ -71,13 +74,12 @@ woocommerce-payment-gateway-boilerplate/     ← raíz = plugin + docker
 
 No hay subcarpeta `plugins/` dentro del repo. El bind mount de Docker coloca este directorio en la ruta de plugins de WordPress.
 
-### Smoke test del stub (v0.2)
+### Smoke tests
 
 ```bash
 php bin/smoke-stub.php
+php bin/smoke-service.php
 ```
-
-Debe imprimir `Smoke passed.` (no necesita WordPress ni Docker).
 
 ## Estado del proyecto
 
@@ -86,7 +88,8 @@ Debe imprimir `Smoke passed.` (no necesita WordPress ni Docker).
 | v0.0 | README + Docker scaffold |
 | v0.1 | Scaffold del plugin (bootstrap, HPOS, i18n) |
 | v0.2 | Contratos HTTP + Provider + StubProvider |
-| v0.3+ | Pendiente |
+| v0.3 | PaymentService + StatusMapper + Logger |
+| v0.4+ | Pendiente |
 
 ## Licencia
 
