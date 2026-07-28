@@ -35,7 +35,7 @@ if ( ! defined( 'WC_GATEWAY_BOILERPLATE_URL' ) ) {
 }
 
 if ( ! defined( 'WC_GATEWAY_BOILERPLATE_VERSION' ) ) {
-	define( 'WC_GATEWAY_BOILERPLATE_VERSION', '0.8.0' );
+	define( 'WC_GATEWAY_BOILERPLATE_VERSION', '0.9.0' );
 }
 
 /**
@@ -58,6 +58,16 @@ if ( ! function_exists( 'esc_html' ) ) {
 	 */
 	function esc_html( $text ) {
 		return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' );
+	}
+}
+
+if ( ! function_exists( 'esc_html__' ) ) {
+	/**
+	 * @param string $text Text.
+	 * @return string
+	 */
+	function esc_html__( $text ) {
+		return esc_html( $text );
 	}
 }
 

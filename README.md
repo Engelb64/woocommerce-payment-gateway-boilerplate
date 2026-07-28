@@ -110,6 +110,8 @@ woocommerce-payment-gateway-boilerplate/     ← raíz = plugin + docker
 │   ├── bootstrap.php
 │   └── Unit/
 ├── phpunit.xml.dist
+├── phpcs.xml.dist
+├── .github/workflows/ci.yml
 ├── documentation/                           (v1.0+)
 └── woocommerce-payment-gateway-boilerplate.php
 ```
@@ -126,12 +128,15 @@ El método se registra con WooCommerce Blocks (`BlocksSupport` + `assets/js/bloc
 
 El checkout classic de v0.4 sigue funcionando.
 
-### Smoke tests / PHPUnit (v0.7)
+### Smoke tests / PHPUnit / PHPCS (v0.7–v0.9)
 
 ```bash
 composer install
 composer test
+composer phpcs
 ```
+
+CI en GitHub Actions (`.github/workflows/ci.yml`) corre lo mismo en PHP 7.4 / 8.1 / 8.2 en cada PR a `main`.
 
 También:
 
@@ -155,7 +160,8 @@ Los unit tests no requieren WordPress ni Docker (usan Brain Monkey para el HTTP 
 | v0.6 | Checkout Blocks |
 | v0.7 | Tests unitarios (PHPUnit) |
 | v0.8 | Validación Docker + setup WP-CLI |
-| v0.9+ | Pendiente |
+| v0.9 | CI GitHub Actions (PHPUnit + PHPCS) |
+| v1.0 | Pendiente |
 
 ## Licencia
 

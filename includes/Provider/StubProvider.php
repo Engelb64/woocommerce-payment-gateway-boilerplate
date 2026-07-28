@@ -27,7 +27,7 @@ class StubProvider extends AbstractProvider {
 	 * {@inheritdoc}
 	 */
 	public function create_payment( array $order_data ): PaymentResult {
-		$order_id = isset( $order_data['order_id'] ) ? (string) $order_data['order_id'] : '0';
+		$order_id   = isset( $order_data['order_id'] ) ? (string) $order_data['order_id'] : '0';
 		$force_fail = ! empty( $order_data['force_fail'] );
 
 		$payment_id = 'stub_pay_' . $order_id;
