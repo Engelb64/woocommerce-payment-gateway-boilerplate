@@ -69,10 +69,12 @@ docker compose logs -f wordpress
 
 ### 5. Activar este plugin
 
-Disponible cuando exista el scaffold (v0.1+):
-
 1. **Plugins** → activar **WooCommerce Payment Gateway Boilerplate**.
-2. **WooCommerce → Ajustes → Pagos** → configurar la pasarela (cuando exista v0.4+).
+2. **WooCommerce → Ajustes → Pagos** → activar **Payment Gateway Boilerplate**.
+3. Guardar. Dejar **Simulate failure** en no para un checkout de prueba OK.
+4. Crear un producto simple, añadir al carrito y pagar en checkout classic.
+
+Si el método no aparece: confirma que WooCommerce está activo y recarga la página de Pagos.
 
 ## URLs útiles
 

@@ -7,6 +7,7 @@
 
 namespace WCGatewayBoilerplate;
 
+use WCGatewayBoilerplate\Gateway\AbstractGateway;
 use WCGatewayBoilerplate\Http\WpHttpClient;
 use WCGatewayBoilerplate\Provider\ProviderInterface;
 use WCGatewayBoilerplate\Provider\StubProvider;
@@ -20,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Main plugin class (singleton).
  *
- * Wires provider + PaymentService. Gateway registration comes in v0.4.
+ * Wires provider, PaymentService and registers the WooCommerce gateway.
  */
 final class Plugin {
 
@@ -73,12 +74,25 @@ final class Plugin {
 		$this->load_textdomain();
 		$this->boot_services();
 
+		add_filter( 'woocommerce_payment_gateways', array( $this, 'register_gateway' ) );
+
 		/**
 		 * Fires after the boilerplate plugin has initialized.
 		 *
 		 * @param Plugin $plugin Plugin instance.
 		 */
 		do_action( 'wc_gateway_boilerplate_init', $this );
+	}
+
+	/**
+	 * Register gateway class with WooCommerce.
+	 *
+	 * @param array<int, string> $gateways Gateway class names.
+	 * @return array<int, string>
+	 */
+	public function register_gateway( $gateways ) {
+		$gateways[] = AbstractGateway::class;
+		return $gateways;
 	}
 
 	/**
@@ -115,6 +129,16 @@ final class Plugin {
 	}
 
 	/**
+	 * Read saved gateway settings from WooCommerce options.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function get_gateway_settings(): array {
+		$settings = get_option( 'woocommerce_' . AbstractGateway::GATEWAY_ID . '_settings', array() );
+		return is_array( $settings ) ? $settings : array();
+	}
+
+	/**
 	 * Build provider + payment service (injectable via filters).
 	 *
 	 * @return void
@@ -124,27 +148,30 @@ final class Plugin {
 			return;
 		}
 
-		$this->logger = new Logger( 'wc-gateway-boilerplate', true );
+		$settings = $this->get_gateway_settings();
+		$logging  = ! isset( $settings['logging'] ) || 'yes' === $settings['logging'];
+
+		$this->logger = new Logger( 'wc-gateway-boilerplate', $logging );
+
+		$default_config = array(
+			'api_key'        => isset( $settings['api_key'] ) ? (string) $settings['api_key'] : '',
+			'webhook_secret' => isset( $settings['webhook_secret'] ) && '' !== $settings['webhook_secret']
+				? (string) $settings['webhook_secret']
+				: 'stub_secret',
+			'sandbox'        => ! isset( $settings['sandbox'] ) || 'yes' === $settings['sandbox'],
+		);
 
 		/**
 		 * Filter provider configuration (api keys, webhook secret, sandbox, ...).
 		 *
 		 * @param array<string, mixed> $config Provider config.
 		 */
-		$config = apply_filters(
-			'wc_gateway_boilerplate_provider_config',
-			array(
-				'webhook_secret' => 'stub_secret',
-				'sandbox'        => true,
-			)
-		);
+		$config = apply_filters( 'wc_gateway_boilerplate_provider_config', $default_config );
 
 		$http = new WpHttpClient();
 
 		/**
 		 * Filter the active provider instance.
-		 *
-		 * Swap StubProvider for a real adapter without touching PaymentService.
 		 *
 		 * @param ProviderInterface $provider Provider.
 		 * @param array             $config   Config.
