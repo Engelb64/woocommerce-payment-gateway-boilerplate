@@ -28,28 +28,28 @@ Más adelante (v1.0+), la documentación detallada vivirá en `documentation/` (
 git clone https://github.com/Engelb64/woocommerce-payment-gateway-boilerplate.git
 cd woocommerce-payment-gateway-boilerplate
 
-# Opcional: dependencias de desarrollo / autoload Composer
-composer install
-
-# Opcional: copiar variables de entorno
 cp .env.example .env
-
+docker compose down -v
 docker compose up -d
 ```
 
-Abrir [http://localhost:8080](http://localhost:8080).
+**Setup automático** (WP + WooCommerce + plugin + producto de prueba):
 
-Primera vez en WordPress:
+```powershell
+# Windows
+powershell -ExecutionPolicy Bypass -File bin\setup-wp.ps1
+```
 
-1. Completar instalación (idioma, admin, etc.).
-2. Instalar y activar **WooCommerce**.
-3. Activar **WooCommerce Payment Gateway Boilerplate** en Plugins.
-4. Ir a **WooCommerce → Ajustes → Pagos**.
-5. Activar **Payment Gateway Boilerplate** / **Boilerplate Payment**.
-6. Dejar **Simulate failure** desmarcado para un pago de prueba exitoso.
-7. Crear un producto, ir al checkout (classic) y pagar con el método.
+```bash
+# Git Bash / WSL / Linux / macOS
+sh bin/setup-wp.sh
+```
 
-Detalle del entorno: [DOCKER.md](./DOCKER.md).
+Admin por defecto: `admin` / `admin` en http://localhost:8080/wp-admin
+
+Luego paga en checkout con **Boilerplate Payment** (Simulate failure = no).
+
+Guía completa y checklist E2E: [DOCKER.md](./DOCKER.md).
 
 ### Configuración del gateway (v0.4)
 
@@ -90,6 +90,8 @@ woocommerce-payment-gateway-boilerplate/     ← raíz = plugin + docker
 ├── composer.json
 ├── bin/smoke-stub.php
 ├── bin/smoke-service.php
+├── bin/setup-wp.sh
+├── bin/setup-wp.ps1
 ├── languages/
 ├── includes/
 │   ├── Plugin.php
@@ -152,7 +154,8 @@ Los unit tests no requieren WordPress ni Docker (usan Brain Monkey para el HTTP 
 | v0.5 | Webhooks firmados (`/?wc-api=wc_gateway_boilerplate`) |
 | v0.6 | Checkout Blocks |
 | v0.7 | Tests unitarios (PHPUnit) |
-| v0.8+ | Pendiente |
+| v0.8 | Validación Docker + setup WP-CLI |
+| v0.9+ | Pendiente |
 
 ## Licencia
 

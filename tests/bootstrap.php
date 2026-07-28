@@ -35,7 +35,7 @@ if ( ! defined( 'WC_GATEWAY_BOILERPLATE_URL' ) ) {
 }
 
 if ( ! defined( 'WC_GATEWAY_BOILERPLATE_VERSION' ) ) {
-	define( 'WC_GATEWAY_BOILERPLATE_VERSION', '0.7.0' );
+	define( 'WC_GATEWAY_BOILERPLATE_VERSION', '0.8.0' );
 }
 
 /**
