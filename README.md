@@ -44,8 +44,28 @@ Primera vez en WordPress:
 1. Completar instalación (idioma, admin, etc.).
 2. Instalar y activar **WooCommerce**.
 3. Activar **WooCommerce Payment Gateway Boilerplate** en Plugins.
+4. Ir a **WooCommerce → Ajustes → Pagos**.
+5. Activar **Payment Gateway Boilerplate** / **Boilerplate Payment**.
+6. Dejar **Simulate failure** desmarcado para un pago de prueba exitoso.
+7. Crear un producto, ir al checkout (classic) y pagar con el método.
 
 Detalle del entorno: [DOCKER.md](./DOCKER.md).
+
+### Configuración del gateway (v0.4)
+
+| Setting | Uso |
+|---|---|
+| Enable/Disable | Activa el método en checkout |
+| Title / Description | Textos visibles al cliente |
+| Sandbox | Modo test (flag para providers reales) |
+| API key | Reservado para providers reales (Stub no lo usa) |
+| Webhook secret | Firma de webhooks (default `stub_secret`) |
+| Logging | Logs en WooCommerce → Estado → Registros |
+| Simulate failure | Fuerza fallo del StubProvider (solo pruebas) |
+
+Tras un pago exitoso con el stub, el pedido debería quedar en **Processing** y guardar el meta `_wc_gateway_boilerplate_payment_id` (ej. `stub_pay_123`).
+
+Los reembolsos desde el pedido en admin pasan por `PaymentService::refund()` → StubProvider.
 
 ## Estructura del repositorio
 
@@ -61,11 +81,12 @@ woocommerce-payment-gateway-boilerplate/     ← raíz = plugin + docker
 ├── languages/
 ├── includes/
 │   ├── Plugin.php
+│   ├── Gateway/AbstractGateway.php          # WC_Payment_Gateway
 │   ├── Dto/
 │   ├── Http/
 │   ├── Provider/
-│   ├── Service/                             # PaymentService, StatusMapper
-│   └── Support/                             # Logger, OrderHelper
+│   ├── Service/
+│   └── Support/
 ├── documentation/                           (v1.0+)
 ├── assets/                                  (v0.6+)
 ├── tests/                                   (v0.7+)
@@ -89,7 +110,8 @@ php bin/smoke-service.php
 | v0.1 | Scaffold del plugin (bootstrap, HPOS, i18n) |
 | v0.2 | Contratos HTTP + Provider + StubProvider |
 | v0.3 | PaymentService + StatusMapper + Logger |
-| v0.4+ | Pendiente |
+| v0.4 | Gateway WooCommerce classic (stub checkout) |
+| v0.5+ | Pendiente |
 
 ## Licencia
 
