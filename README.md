@@ -15,14 +15,21 @@ Más adelante (v1.0+), la documentación detallada vivirá en `documentation/` (
 
 ## Requisitos
 
-- Docker Desktop (o Docker + Docker Compose v2)
+- WordPress 6.0+
+- WooCommerce (activo)
+- PHP 7.4+
+- Docker Desktop (o Docker + Docker Compose v2) — para desarrollo local
 - Git
+- Composer (opcional; hay autoload de respaldo si no corres `composer install`)
 
 ## Inicio rápido
 
 ```bash
 git clone https://github.com/Engelb64/woocommerce-payment-gateway-boilerplate.git
 cd woocommerce-payment-gateway-boilerplate
+
+# Opcional: dependencias de desarrollo / autoload Composer
+composer install
 
 # Opcional: copiar variables de entorno
 cp .env.example .env
@@ -36,7 +43,7 @@ Primera vez en WordPress:
 
 1. Completar instalación (idioma, admin, etc.).
 2. Instalar y activar **WooCommerce**.
-3. Cuando exista el scaffold (v0.1+), activar **WooCommerce Payment Gateway Boilerplate** en Plugins.
+3. Activar **WooCommerce Payment Gateway Boilerplate** en Plugins.
 
 Detalle del entorno: [DOCKER.md](./DOCKER.md).
 
@@ -48,12 +55,14 @@ woocommerce-payment-gateway-boilerplate/     ← raíz = plugin + docker
 ├── .env.example
 ├── README.md
 ├── DOCKER.md
+├── composer.json
+├── languages/
+├── includes/
+│   └── Plugin.php
 ├── documentation/                           (v1.0+)
-├── composer.json                            (v0.1+)
-├── includes/                                (v0.1+)
 ├── assets/                                  (v0.6+)
 ├── tests/                                   (v0.7+)
-└── woocommerce-payment-gateway-boilerplate.php (v0.1+)
+└── woocommerce-payment-gateway-boilerplate.php
 ```
 
 No hay subcarpeta `plugins/` dentro del repo. El bind mount de Docker coloca este directorio en la ruta de plugins de WordPress.
@@ -63,7 +72,8 @@ No hay subcarpeta `plugins/` dentro del repo. El bind mount de Docker coloca est
 | Versión | Estado |
 |---|---|
 | v0.0 | README + Docker scaffold |
-| v0.1+ | Código del plugin (pendiente) |
+| v0.1 | Scaffold del plugin (bootstrap, HPOS, i18n) |
+| v0.2+ | Pendiente |
 
 ## Licencia
 
