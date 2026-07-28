@@ -1,0 +1,10 @@
+/**
+ * Minimal styles for the boilerplate gateway (Blocks + classic description).
+ */
+
+.wc-gateway-boilerplate-blocks-description {
+	margin: 0.5rem 0 0;
+	font-size: 0.925em;
+	line-height: 1.4;
+	opacity: 0.9;
+}

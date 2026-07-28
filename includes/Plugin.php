@@ -8,6 +8,7 @@
 namespace WCGatewayBoilerplate;
 
 use WCGatewayBoilerplate\Gateway\AbstractGateway;
+use WCGatewayBoilerplate\Gateway\BlocksSupport;
 use WCGatewayBoilerplate\Http\WpHttpClient;
 use WCGatewayBoilerplate\Provider\ProviderInterface;
 use WCGatewayBoilerplate\Provider\StubProvider;
@@ -80,12 +81,50 @@ final class Plugin {
 		$webhook = new WebhookHandler();
 		$webhook->register();
 
+		$this->register_blocks_support();
+
 		/**
 		 * Fires after the boilerplate plugin has initialized.
 		 *
 		 * @param Plugin $plugin Plugin instance.
 		 */
 		do_action( 'wc_gateway_boilerplate_init', $this );
+	}
+
+	/**
+	 * Register WooCommerce Blocks payment method type.
+	 *
+	 * @return void
+	 */
+	private function register_blocks_support() {
+		$callback = array( $this, 'on_blocks_loaded' );
+
+		if ( did_action( 'woocommerce_blocks_loaded' ) ) {
+			$this->on_blocks_loaded();
+			return;
+		}
+
+		add_action( 'woocommerce_blocks_loaded', $callback );
+	}
+
+	/**
+	 * Hook into Blocks payment method registration.
+	 *
+	 * @return void
+	 */
+	public function on_blocks_loaded() {
+		if ( ! class_exists( \Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType::class ) ) {
+			return;
+		}
+
+		add_action(
+			'woocommerce_blocks_payment_method_type_registration',
+			static function ( $payment_method_registry ) {
+				if ( is_object( $payment_method_registry ) && method_exists( $payment_method_registry, 'register' ) ) {
+					$payment_method_registry->register( new BlocksSupport() );
+				}
+			}
+		);
 	}
 
 	/**
