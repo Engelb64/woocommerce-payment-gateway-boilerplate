@@ -67,6 +67,18 @@ Tras un pago exitoso con el stub, el pedido debería quedar en **Processing** y 
 
 Los reembolsos desde el pedido en admin pasan por `PaymentService::refund()` → StubProvider.
 
+### Webhooks (v0.5)
+
+URL local:
+
+```text
+http://localhost:8080/?wc-api=wc_gateway_boilerplate
+```
+
+Firma stub: header `X-Stub-Signature` = HMAC-SHA256 del body con el **Webhook secret** (default `stub_secret`).
+
+Ver ejemplos `curl` en [DOCKER.md](./DOCKER.md).
+
 ## Estructura del repositorio
 
 ```text
@@ -81,7 +93,8 @@ woocommerce-payment-gateway-boilerplate/     ← raíz = plugin + docker
 ├── languages/
 ├── includes/
 │   ├── Plugin.php
-│   ├── Gateway/AbstractGateway.php          # WC_Payment_Gateway
+│   ├── Gateway/AbstractGateway.php
+│   ├── Webhook/WebhookHandler.php
 │   ├── Dto/
 │   ├── Http/
 │   ├── Provider/
@@ -111,7 +124,8 @@ php bin/smoke-service.php
 | v0.2 | Contratos HTTP + Provider + StubProvider |
 | v0.3 | PaymentService + StatusMapper + Logger |
 | v0.4 | Gateway WooCommerce classic (stub checkout) |
-| v0.5+ | Pendiente |
+| v0.5 | Webhooks firmados (`/?wc-api=wc_gateway_boilerplate`) |
+| v0.6+ | Pendiente |
 
 ## Licencia
 
