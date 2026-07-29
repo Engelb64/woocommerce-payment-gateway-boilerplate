@@ -17,8 +17,8 @@ Gateway (WC_Payment_Gateway) ──────── BlocksSupport
 PaymentService (create / refund / reconcile)
       │
       ▼
-ProviderInterface  ◄── main extension point (StubProvider by default)
-      │
+ProviderInterface  ◄── main extension point (implement YOUR provider; Stub by default)
+      │                    optional: Provider/Example/* reference adapters (deletable)
       ▼
 Http ClientInterface (WpHttpClient)
       ▲
@@ -33,7 +33,8 @@ WebhookHandler ──► PaymentService
 | Gateway | `Gateway\AbstractGateway` | Settings UI, `process_payment`, `process_refund` |
 | Blocks | `Gateway\BlocksSupport` | Register method with Checkout Blocks |
 | Service | `PaymentService`, `StatusMapper` | Orchestration + provider status → Woo status |
-| Provider | `ProviderInterface`, `StubProvider`, … | Talk to the real payment API |
+| Provider | `ProviderInterface`, `StubProvider`, your adapter | Talk to the payment API |
+| Example | `Provider\Example\*` | Optional reference implementations (not product) |
 | HTTP | `ClientInterface`, `WpHttpClient` | Transport only |
 | Webhook | `WebhookHandler` | `/?wc-api={gateway_id}` |
 | Support | `Logger`, `OrderHelper` | Logs (scrubbed) + order meta / idempotency |

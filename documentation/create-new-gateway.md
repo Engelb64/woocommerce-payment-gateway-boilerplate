@@ -1,6 +1,15 @@
 # Create a new payment gateway from this boilerplate
 
-This is the main v1.0 guide: turn the stub into a real provider plugin.
+This repo is a **skeleton**: clone it, rename it, implement **your** provider.  
+It is **not** a Stripe (or any other brand) product. The optional Stripe class under `Provider/Example/` is only a teaching reference.
+
+## Mental model
+
+```text
+Keep:     Gateway → PaymentService → webhooks → HTTP client → Stub for local tests
+Replace:  ProviderInterface implementation  ← your orchestrator (DEUNA, Acme, …)
+Delete:   includes/Provider/Example/        ← when you no longer need the Stripe sample
+```
 
 ## 1. Clone and rename
 
@@ -31,6 +40,11 @@ Also update:
 
 Create e.g. `includes/Provider/AcmeProvider.php` extending `AbstractProvider` (or implementing the interface directly).
 
+**Study aids (optional):**
+
+- `StubProvider` — minimal success/fail + HMAC webhooks  
+- `Provider/Example/StripeReferenceProvider` — real API, redirect, Stripe webhooks (safe to delete)
+
 Required methods:
 
 - `create_payment( array $order_data ): PaymentResult`
@@ -43,15 +57,19 @@ Required methods:
 
 - `order_id`, `amount`, `currency`
 - `customer` (email/name)
-- `return_url` (optional)
+- `return_url` / `cancel_url` (optional)
 
 Return normalized statuses the mapper understands: `pending`, `created`, `authorized`, `paid`, `captured`, `failed`, `cancelled`/`canceled`, `refunded` — or extend the map via `wc_gateway_boilerplate_status_map`.
 
 Use `ClientInterface` / `$this->http` for API calls. Do **not** call WooCommerce APIs from the provider.
 
+If your orchestrator ships a **Web SDK** (widget) plus a backend API (typical of DEUNA-style products): keep secrets and create-session/refund/webhook in the Provider; load the SDK from gateway/Blocks assets.
+
 ## 3. Wire the provider
 
-In `Plugin::boot_services()` (or via filter from a small mu-plugin while developing):
+Prefer making **your** provider the default in `Plugin::boot_services()` (remove the Stripe reference option from settings).
+
+Or temporarily:
 
 ```php
 add_filter( 'wc_gateway_boilerplate_provider', function ( $provider, $config ) {
@@ -66,7 +84,7 @@ Prefer reading secrets from gateway settings (`api_key`, `webhook_secret`, `sand
 
 ## 4. Settings & assets
 
-- Adjust form fields in `AbstractGateway` (titles, help text; remove **Simulate failure** for production).
+- Adjust form fields in `AbstractGateway` (titles, help text; remove **Simulate failure** and the Stripe reference select for production).
 - If the provider needs hosted fields / 3DS / redirect JS, add `assets/js/checkout.js` (classic) and extend `assets/js/blocks.js`.
 - Keep PCI scope minimal: prefer provider-hosted / tokenized fields; never store PAN/CVV.
 
@@ -81,6 +99,7 @@ Prefer reading secrets from gateway settings (`api_key`, `webhook_secret`, `sand
 - [ ] Duplicate `event_id` → idempotent
 - [ ] Admin refund (full / partial as supported)
 - [ ] Classic checkout + Checkout Blocks
+- [ ] `Provider/Example/` removed (or clearly not enabled) for client builds
 
 ## 6. Ship
 
@@ -92,3 +111,5 @@ Prefer reading secrets from gateway settings (`api_key`, `webhook_secret`, `sand
 
 For a real gateway you should **not** rewrite PaymentService / WebhookHandler / HTTP client.  
 If you must, the architecture probably needs a new extension point — prefer a filter or a small interface addition over a fork.
+
+Stripe reference walkthrough (optional learning): [reference-stripe-adapter.md](./reference-stripe-adapter.md).
