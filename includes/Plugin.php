@@ -10,6 +10,7 @@ namespace WCGatewayBoilerplate;
 use WCGatewayBoilerplate\Gateway\AbstractGateway;
 use WCGatewayBoilerplate\Gateway\BlocksSupport;
 use WCGatewayBoilerplate\Http\WpHttpClient;
+use WCGatewayBoilerplate\Provider\Example\StripeReferenceProvider;
 use WCGatewayBoilerplate\Provider\ProviderInterface;
 use WCGatewayBoilerplate\Provider\StubProvider;
 use WCGatewayBoilerplate\Service\PaymentService;
@@ -196,12 +197,17 @@ final class Plugin {
 
 		$this->logger = new Logger( 'wc-gateway-boilerplate', $logging );
 
+		$active_provider = isset( $settings['active_provider'] ) ? (string) $settings['active_provider'] : 'stub';
+
+		$default_webhook_secret = 'stripe_reference' === $active_provider ? '' : 'stub_secret';
+
 		$default_config = array(
-			'api_key'        => isset( $settings['api_key'] ) ? (string) $settings['api_key'] : '',
-			'webhook_secret' => isset( $settings['webhook_secret'] ) && '' !== $settings['webhook_secret']
+			'api_key'         => isset( $settings['api_key'] ) ? (string) $settings['api_key'] : '',
+			'webhook_secret'  => isset( $settings['webhook_secret'] ) && '' !== $settings['webhook_secret']
 				? (string) $settings['webhook_secret']
-				: 'stub_secret',
-			'sandbox'        => ! isset( $settings['sandbox'] ) || 'yes' === $settings['sandbox'],
+				: $default_webhook_secret,
+			'sandbox'         => ! isset( $settings['sandbox'] ) || 'yes' === $settings['sandbox'],
+			'active_provider' => $active_provider,
 		);
 
 		/**
@@ -210,8 +216,14 @@ final class Plugin {
 		 * @param array<string, mixed> $config Provider config.
 		 */
 		$config = apply_filters( 'wc_gateway_boilerplate_provider_config', $default_config );
+		$config = is_array( $config ) ? $config : $default_config;
 
 		$http = new WpHttpClient();
+
+		// Default is always Stub. Stripe lives under Example/ as a deletable reference adapter.
+		$default_provider = 'stripe_reference' === ( $config['active_provider'] ?? 'stub' )
+			? new StripeReferenceProvider( $http, $config )
+			: new StubProvider( $http, $config );
 
 		/**
 		 * Filter the active provider instance.
@@ -221,7 +233,7 @@ final class Plugin {
 		 */
 		$this->provider = apply_filters(
 			'wc_gateway_boilerplate_provider',
-			new StubProvider( $http, is_array( $config ) ? $config : array() ),
+			$default_provider,
 			$config
 		);
 

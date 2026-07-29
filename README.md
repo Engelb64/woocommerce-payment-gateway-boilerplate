@@ -1,6 +1,6 @@
 # WooCommerce Payment Gateway Boilerplate
 
-**v1.0** — Modular boilerplate to build WooCommerce payment gateways / orchestrators.
+**Skeleton** to build WooCommerce payment gateways / **orchestrators** — not a branded Stripe (or other) product.
 
 The **repository root is the plugin**. Docker bind-mounts this folder into `wp-content/plugins/woocommerce-payment-gateway-boilerplate`.
 
@@ -8,14 +8,16 @@ The **repository root is the plugin**. Docker bind-mounts this folder into `wp-c
 
 - WooCommerce gateway (classic + Blocks)
 - HPOS + cart/checkout blocks compatibility
-- Decoupled `ProviderInterface` (StubProvider included)
+- Decoupled `ProviderInterface` with **`StubProvider` by default**
+- Optional **reference** adapter under `includes/Provider/Example/` (Stripe Checkout — deletable)
 - `PaymentService` + status mapping
 - Signed webhooks (`/?wc-api=wc_gateway_boilerplate`)
 - Docker local environment + WP-CLI setup scripts
 - PHPUnit + PHPCS + GitHub Actions CI
 - i18n-ready (text domain + `.pot`)
 
-For a **real** gateway you mainly implement a Provider (+ settings/assets). See [documentation/create-new-gateway.md](./documentation/create-new-gateway.md).
+**Main path:** clone → rename → implement your Provider.  
+Guide: [documentation/create-new-gateway.md](./documentation/create-new-gateway.md).
 
 ## Documentation
 
@@ -23,7 +25,7 @@ For a **real** gateway you mainly implement a Provider (+ settings/assets). See 
 |---|---|
 | [README.md](./README.md) | This file — quick start |
 | [DOCKER.md](./DOCKER.md) | Local Docker, E2E checklist, webhooks curl |
-| [documentation/](./documentation/README.md) | Architecture, new gateway, webhooks, Blocks, i18n |
+| [documentation/](./documentation/README.md) | Architecture, new gateway, optional Stripe reference, webhooks, Blocks, i18n |
 
 ## Requirements
 
@@ -63,11 +65,12 @@ Pay at checkout with **Boilerplate Payment** (leave **Simulate failure** off).
 ## Create a real gateway (summary)
 
 1. Clone / fork and rename slug, namespace, text domain, gateway id.
-2. Implement `ProviderInterface` (see `StubProvider` as reference).
-3. Wire it with `wc_gateway_boilerplate_provider` (and config filter).
-4. Adjust settings / JS if the provider needs hosted fields or redirect.
-5. Test: success, failure, webhook sign/fail/duplicate, refund, classic + Blocks.
-6. Run `composer test` and `composer phpcs`.
+2. Implement `ProviderInterface` (start from `StubProvider`; optionally study `Provider/Example/StripeReferenceProvider`).
+3. Wire **your** provider as the default (filter or `Plugin::boot_services`).
+4. Adjust settings / JS if the provider needs hosted fields, SDK widget, or redirect.
+5. Delete `includes/Provider/Example/` before a client delivery if you do not need it.
+6. Test: success, failure, webhook sign/fail/duplicate, refund, classic + Blocks.
+7. Run `composer test` and `composer phpcs`.
 
 Full guide: [documentation/create-new-gateway.md](./documentation/create-new-gateway.md).
 
@@ -77,19 +80,25 @@ Full guide: [documentation/create-new-gateway.md](./documentation/create-new-gat
 |---|---|
 | Enable/Disable | Show method at checkout |
 | Title / Description | Customer-facing copy |
-| Sandbox | Test mode flag for real providers |
-| API key | Provider credentials (unused by stub) |
-| Webhook secret | Signature verification (`stub_secret` by default) |
+| Active provider | **Stub (default)** or optional Stripe **reference** example |
+| Sandbox | Prefer test keys for whatever provider you wire |
+| API key / Secret key | For real/reference providers (unused by stub) |
+| Webhook secret | Stub HMAC or your provider’s signing secret |
 | Logging | WooCommerce → Status → Logs |
 | Simulate failure | Stub-only forced failure |
 
-Successful stub payments set the order to **Processing** and store `_wc_gateway_boilerplate_payment_id` (e.g. `stub_pay_123`).
+Optional Stripe sandbox walkthrough: [documentation/reference-stripe-adapter.md](./documentation/reference-stripe-adapter.md).
+
+Successful **stub** payments set the order to **Processing** (`stub_pay_*`).  
+The Stripe **reference** sets **on-hold** until webhook → **Processing**.
 
 Webhook URL:
 
 ```text
 http://localhost:8080/?wc-api=wc_gateway_boilerplate
 ```
+
+(Use your Docker port if different, e.g. `9080`.)
 
 ## Quality
 
@@ -120,7 +129,8 @@ woocommerce-payment-gateway-boilerplate/
 ├── composer.json
 ├── bin/                    # smoke + setup-wp
 ├── languages/              # .pot template
-├── includes/               # Plugin, Gateway, Provider, Service, …
+├── includes/               # Plugin, Gateway, Provider (+ Example/), Service, …
+├── documentation/          # Architecture, create-new-gateway, optional Stripe reference
 ├── assets/js|css
 ├── tests/Unit
 ├── phpunit.xml.dist
@@ -134,11 +144,12 @@ woocommerce-payment-gateway-boilerplate/
 | Version | Status |
 |---|---|
 | v0.1–v0.9 | Incremental roadmap (scaffold → CI) |
-| **v1.0** | **MVP boilerplate — ready for real providers** |
+| **v1.0** | Skeleton + Stub — ready to build real providers |
+| **v1.1** (this branch) | Optional Stripe **reference** adapter under `Provider/Example/` |
 
-## Out of scope (v1.0)
+## Out of scope
 
-Headless/GraphQL, Playwright E2E, subscriptions, advanced multi-currency, WPML-specific integration. Planned as post-1.0 when needed.
+Headless/GraphQL, Playwright E2E, subscriptions, advanced multi-currency, WPML-specific integration — see fase 2 plan locally. This repo is not a hosted Stripe plugin.
 
 ## License
 

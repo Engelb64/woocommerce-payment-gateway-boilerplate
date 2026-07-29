@@ -30,7 +30,7 @@ class AbstractGateway extends \WC_Payment_Gateway {
 	public function __construct() {
 		$this->id                 = self::GATEWAY_ID;
 		$this->method_title       = __( 'Payment Gateway Boilerplate', 'wc-payment-gateway-boilerplate' );
-		$this->method_description = __( 'Modular boilerplate gateway (StubProvider by default).', 'wc-payment-gateway-boilerplate' );
+		$this->method_description = __( 'Skeleton for custom WooCommerce payment orchestrators. Default: StubProvider. Optional Stripe class under Provider/Example is a deletable reference only.', 'wc-payment-gateway-boilerplate' );
 		$this->has_fields         = false;
 		$this->supports           = array( 'products', 'refunds' );
 
@@ -68,26 +68,37 @@ class AbstractGateway extends \WC_Payment_Gateway {
 				'title'       => __( 'Description', 'wc-payment-gateway-boilerplate' ),
 				'type'        => 'textarea',
 				'description' => __( 'Payment method description shown at checkout.', 'wc-payment-gateway-boilerplate' ),
-				'default'     => __( 'Pay using the boilerplate stub provider (for development).', 'wc-payment-gateway-boilerplate' ),
+				'default'     => __( 'Pay using the boilerplate payment provider.', 'wc-payment-gateway-boilerplate' ),
+				'desc_tip'    => true,
+			),
+			'active_provider'  => array(
+				'title'       => __( 'Active provider', 'wc-payment-gateway-boilerplate' ),
+				'type'        => 'select',
+				'description' => __( 'Stub is the default for this skeleton. “Stripe reference” is an optional teaching adapter (Provider/Example) — replace with your orchestrator for real projects.', 'wc-payment-gateway-boilerplate' ),
+				'default'     => 'stub',
+				'options'     => array(
+					'stub'             => __( 'Stub (default — local simulation)', 'wc-payment-gateway-boilerplate' ),
+					'stripe_reference' => __( 'Reference only: Stripe Checkout (example)', 'wc-payment-gateway-boilerplate' ),
+				),
 				'desc_tip'    => true,
 			),
 			'sandbox'          => array(
 				'title'   => __( 'Sandbox', 'wc-payment-gateway-boilerplate' ),
 				'type'    => 'checkbox',
-				'label'   => __( 'Enable sandbox / test mode', 'wc-payment-gateway-boilerplate' ),
+				'label'   => __( 'Enable sandbox / test mode (for your provider or the Stripe reference)', 'wc-payment-gateway-boilerplate' ),
 				'default' => 'yes',
 			),
 			'api_key'          => array(
-				'title'       => __( 'API key', 'wc-payment-gateway-boilerplate' ),
+				'title'       => __( 'API key / Secret key', 'wc-payment-gateway-boilerplate' ),
 				'type'        => 'password',
-				'description' => __( 'Provider API key (not used by StubProvider).', 'wc-payment-gateway-boilerplate' ),
+				'description' => __( 'Used by real/reference providers (e.g. Stripe sk_test_…). Unused by StubProvider.', 'wc-payment-gateway-boilerplate' ),
 				'default'     => '',
 				'desc_tip'    => true,
 			),
 			'webhook_secret'   => array(
 				'title'       => __( 'Webhook secret', 'wc-payment-gateway-boilerplate' ),
 				'type'        => 'password',
-				'description' => __( 'Shared secret for webhook signature verification.', 'wc-payment-gateway-boilerplate' ),
+				'description' => __( 'Stub: HMAC secret (default stub_secret). Stripe reference: whsec_…. Your provider: whatever its docs require.', 'wc-payment-gateway-boilerplate' ),
 				'default'     => 'stub_secret',
 				'desc_tip'    => true,
 			),
@@ -102,14 +113,14 @@ class AbstractGateway extends \WC_Payment_Gateway {
 				'type'        => 'checkbox',
 				'label'       => __( 'Force StubProvider to fail create_payment (for testing)', 'wc-payment-gateway-boilerplate' ),
 				'default'     => 'no',
-				'description' => __( 'Only affects StubProvider. Disable for a successful test checkout.', 'wc-payment-gateway-boilerplate' ),
+				'description' => __( 'Only affects StubProvider.', 'wc-payment-gateway-boilerplate' ),
 			),
 			'webhook_url'      => array(
 				'title'       => __( 'Webhook URL', 'wc-payment-gateway-boilerplate' ),
 				'type'        => 'title',
 				'description' => sprintf(
 					/* translators: %s: webhook URL */
-					__( 'Send provider webhooks to: %s', 'wc-payment-gateway-boilerplate' ),
+					__( 'Send provider webhooks to: %s — For the Stripe reference locally, forward with Stripe CLI.', 'wc-payment-gateway-boilerplate' ),
 					'<code>' . esc_html( WebhookHandler::get_url() ) . '</code>'
 				),
 			),
@@ -132,9 +143,10 @@ class AbstractGateway extends \WC_Payment_Gateway {
 
 		$extra = array(
 			'return_url' => $this->get_return_url( $order ),
+			'cancel_url' => function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : $this->get_return_url( $order ),
 		);
 
-		if ( 'yes' === $this->get_option( 'simulate_failure', 'no' ) ) {
+		if ( 'stub' === $this->get_option( 'active_provider', 'stub' ) && 'yes' === $this->get_option( 'simulate_failure', 'no' ) ) {
 			$extra['force_fail'] = true;
 		}
 
