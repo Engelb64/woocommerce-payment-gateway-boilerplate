@@ -54,15 +54,15 @@ class StripeReferenceProvider extends AbstractProvider {
 		$product     = sprintf( 'Order #%s', $order_id );
 
 		$body = array(
-			'mode'                 => 'payment',
-			'success_url'          => $return_url,
-			'cancel_url'           => $cancel_url ? $cancel_url : $return_url,
-			'client_reference_id'  => $order_id,
-			'metadata[order_id]'   => $order_id,
-			'line_items[0][price_data][currency]' => $currency,
+			'mode'                                   => 'payment',
+			'success_url'                            => $return_url,
+			'cancel_url'                             => $cancel_url ? $cancel_url : $return_url,
+			'client_reference_id'                    => $order_id,
+			'metadata[order_id]'                     => $order_id,
+			'line_items[0][price_data][currency]'    => $currency,
 			'line_items[0][price_data][product_data][name]' => $product,
 			'line_items[0][price_data][unit_amount]' => (string) $unit_amount,
-			'line_items[0][quantity]' => '1',
+			'line_items[0][quantity]'                => '1',
 		);
 
 		if ( ! empty( $order_data['customer']['email'] ) ) {
@@ -79,8 +79,8 @@ class StripeReferenceProvider extends AbstractProvider {
 			return $this->fail_result( '', $this->extract_error_message( $response['body'] ), $response['body'] );
 		}
 
-		$payload = $this->decode_json( $response['body'] );
-		$session_id = isset( $payload['id'] ) ? (string) $payload['id'] : '';
+		$payload      = $this->decode_json( $response['body'] );
+		$session_id   = isset( $payload['id'] ) ? (string) $payload['id'] : '';
 		$checkout_url = isset( $payload['url'] ) ? (string) $payload['url'] : '';
 
 		if ( '' === $session_id || '' === $checkout_url ) {
@@ -181,10 +181,10 @@ class StripeReferenceProvider extends AbstractProvider {
 	 * {@inheritdoc}
 	 */
 	public function parse_webhook( array $headers, string $raw_body ): WebhookEvent {
-		$payload = $this->decode_json( $raw_body );
-		$type    = isset( $payload['type'] ) ? (string) $payload['type'] : 'unknown';
+		$payload  = $this->decode_json( $raw_body );
+		$type     = isset( $payload['type'] ) ? (string) $payload['type'] : 'unknown';
 		$event_id = isset( $payload['id'] ) ? (string) $payload['id'] : ( 'stripe_evt_' . md5( $raw_body ) );
-		$object  = isset( $payload['data']['object'] ) && is_array( $payload['data']['object'] )
+		$object   = isset( $payload['data']['object'] ) && is_array( $payload['data']['object'] )
 			? $payload['data']['object']
 			: array();
 
@@ -260,8 +260,8 @@ class StripeReferenceProvider extends AbstractProvider {
 	/**
 	 * Perform a Stripe API call (form-urlencoded).
 	 *
-	 * @param string               $method HTTP method.
-	 * @param string               $path   API path starting with /.
+	 * @param string                $method HTTP method.
+	 * @param string                $path   API path starting with /.
 	 * @param array<string, string> $body  Form fields (POST only).
 	 * @return array{status:int,headers:array<string,mixed>,body:string}
 	 */
@@ -303,7 +303,7 @@ class StripeReferenceProvider extends AbstractProvider {
 
 		$response = $this->api_request( 'GET', '/checkout/sessions/' . rawurlencode( $provider_payment_id ) );
 		if ( $response['status'] < 200 || $response['status'] >= 300 ) {
-			throw new \RuntimeException( $this->extract_error_message( $response['body'] ) );
+			throw new \RuntimeException( esc_html( $this->extract_error_message( $response['body'] ) ) );
 		}
 
 		$payload = $this->decode_json( $response['body'] );
@@ -367,7 +367,7 @@ class StripeReferenceProvider extends AbstractProvider {
 	 * @return string
 	 */
 	private function map_stripe_object_status( array $object ): string {
-		$status = isset( $object['status'] ) ? strtolower( (string) $object['status'] ) : '';
+		$status         = isset( $object['status'] ) ? strtolower( (string) $object['status'] ) : '';
 		$payment_status = isset( $object['payment_status'] ) ? strtolower( (string) $object['payment_status'] ) : '';
 
 		if ( 'paid' === $payment_status || 'complete' === $status || 'succeeded' === $status ) {
@@ -387,8 +387,8 @@ class StripeReferenceProvider extends AbstractProvider {
 	}
 
 	/**
-	 * @param string               $payment_id Payment id.
-	 * @param string               $message    Message.
+	 * @param string                      $payment_id Payment id.
+	 * @param string                      $message    Message.
 	 * @param array<string, mixed>|string $raw Raw payload.
 	 * @return PaymentResult
 	 */
