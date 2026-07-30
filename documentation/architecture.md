@@ -12,9 +12,10 @@ Plugin bootstrap
       │
       ▼
 Gateway (WC_Payment_Gateway) ──────── BlocksSupport
-      │
-      ▼
-PaymentService (create / refund / reconcile)
+      │                                    │
+      │                              Headless REST (optional)
+      ▼                                    │
+PaymentService (create / refund / reconcile) ◄──┘
       │
       ▼
 ProviderInterface  ◄── main extension point (implement YOUR provider; Stub by default)
@@ -34,6 +35,7 @@ WebhookHandler ──► PaymentService
 | Blocks | `Gateway\BlocksSupport` | Register method with Checkout Blocks |
 | Service | `PaymentService`, `StatusMapper` | Orchestration + provider status → Woo status |
 | Provider | `ProviderInterface`, `StubProvider`, your adapter | Talk to the payment API |
+| Headless | `Headless\RestController`, `PaymentResponseMapper` | REST API → PaymentService (no payment logic) |
 | Example | `Provider\Example\*` | Optional reference implementations (not product) |
 | HTTP | `ClientInterface`, `WpHttpClient` | Transport only |
 | Webhook | `WebhookHandler` | `/?wc-api={gateway_id}` |
