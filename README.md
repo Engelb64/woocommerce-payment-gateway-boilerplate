@@ -10,6 +10,7 @@ The **repository root is the plugin**. Docker bind-mounts this folder into `wp-c
 - HPOS + cart/checkout blocks compatibility
 - Decoupled `ProviderInterface` with **`StubProvider` by default**
 - Optional **reference** adapter under `includes/Provider/Example/` (Stripe Checkout — deletable)
+- **Headless REST** API (`wc-gateway-boilerplate/v1`) on top of `PaymentService`
 - `PaymentService` + status mapping
 - Signed webhooks (`/?wc-api=wc_gateway_boilerplate`)
 - Docker local environment + WP-CLI setup scripts
@@ -17,7 +18,8 @@ The **repository root is the plugin**. Docker bind-mounts this folder into `wp-c
 - i18n-ready (text domain + `.pot`)
 
 **Main path:** clone → rename → implement your Provider.  
-Guide: [documentation/create-new-gateway.md](./documentation/create-new-gateway.md).
+Guide: [documentation/create-new-gateway.md](./documentation/create-new-gateway.md).  
+Headless: [documentation/headless.md](./documentation/headless.md).
 
 ## Documentation
 
@@ -25,7 +27,7 @@ Guide: [documentation/create-new-gateway.md](./documentation/create-new-gateway.
 |---|---|
 | [README.md](./README.md) | This file — quick start |
 | [DOCKER.md](./DOCKER.md) | Local Docker, E2E checklist, webhooks curl |
-| [documentation/](./documentation/README.md) | Architecture, new gateway, optional Stripe reference, webhooks, Blocks, i18n |
+| [documentation/](./documentation/README.md) | Architecture, new gateway, headless, optional Stripe reference, webhooks, Blocks, i18n |
 
 ## Requirements
 
@@ -145,11 +147,12 @@ woocommerce-payment-gateway-boilerplate/
 |---|---|
 | v0.1–v0.9 | Incremental roadmap (scaffold → CI) |
 | **v1.0** | Skeleton + Stub — ready to build real providers |
-| **v1.1** (this branch) | Optional Stripe **reference** adapter under `Provider/Example/` |
+| **v1.1** | Optional Stripe **reference** adapter under `Provider/Example/` |
+| **v1.2** (this branch) | Headless REST payment API (`wc-gateway-boilerplate/v1`) |
 
 ## Out of scope
 
-Headless/GraphQL, Playwright E2E, subscriptions, advanced multi-currency, WPML-specific integration — see fase 2 plan locally. This repo is not a hosted Stripe plugin.
+Headless **GraphQL** (WPGraphQL soft-dep later), Playwright E2E, subscriptions, advanced multi-currency, WPML-specific integration — see fase 2 plan locally. This repo is not a hosted Stripe plugin.
 
 ## License
 

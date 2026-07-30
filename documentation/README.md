@@ -6,6 +6,7 @@ Public docs for the **WooCommerce Payment Gateway Boilerplate** — a **skeleton
 |---|---|
 | [Architecture](./architecture.md) | Layers, data flow, extension points |
 | [Create a new gateway](./create-new-gateway.md) | **Main path:** clone → rename → your Provider |
+| [Headless API](./headless.md) | REST create/refund/status for decoupled storefronts |
 | [Stripe reference adapter](./reference-stripe-adapter.md) | Optional teaching example (safe to delete) |
 | [Webhooks](./webhooks.md) | Endpoint, signatures, idempotency |
 | [Checkout Blocks](./checkout-blocks.md) | Blocks integration notes |

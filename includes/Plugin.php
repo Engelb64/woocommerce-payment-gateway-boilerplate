@@ -9,6 +9,7 @@ namespace WCGatewayBoilerplate;
 
 use WCGatewayBoilerplate\Gateway\AbstractGateway;
 use WCGatewayBoilerplate\Gateway\BlocksSupport;
+use WCGatewayBoilerplate\Headless\RestController;
 use WCGatewayBoilerplate\Http\WpHttpClient;
 use WCGatewayBoilerplate\Provider\Example\StripeReferenceProvider;
 use WCGatewayBoilerplate\Provider\ProviderInterface;
@@ -81,6 +82,9 @@ final class Plugin {
 
 		$webhook = new WebhookHandler();
 		$webhook->register();
+
+		$headless = new RestController();
+		$headless->register();
 
 		$this->register_blocks_support();
 
